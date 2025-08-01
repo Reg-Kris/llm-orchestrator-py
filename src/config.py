@@ -83,7 +83,37 @@ def load_configuration() -> Tuple[Dict[str, Any], Optional[Any]]:
 
 def setup_middleware(app, config: Dict[str, Any]):
     """Setup middleware for the FastAPI app"""
+    import uuid
     from fastapi.middleware.cors import CORSMiddleware
+    from starlette.middleware.base import BaseHTTPMiddleware
+    from starlette.requests import Request as StarletteRequest
+    from starlette.responses import Response
+    
+    # Custom middleware for distributed tracing
+    class DistributedTracingMiddleware(BaseHTTPMiddleware):
+        async def dispatch(self, request: StarletteRequest, call_next):
+            # Extract trace ID from incoming request or generate new one
+            trace_id = request.headers.get("X-Trace-ID") or str(uuid.uuid4())
+            
+            # Add trace ID to request state for use in handlers
+            request.state.trace_id = trace_id
+            
+            # Log request start with trace ID
+            logger.info(f"[TRACE:{trace_id}] LLM Orchestrator request: {request.method} {request.url.path}")
+            
+            # Process request
+            response = await call_next(request)
+            
+            # Add trace ID to response headers
+            response.headers["X-Trace-ID"] = trace_id
+            
+            # Log request completion
+            logger.info(f"[TRACE:{trace_id}] LLM Orchestrator response: {response.status_code}")
+            
+            return response
+    
+    # Add distributed tracing middleware
+    app.add_middleware(DistributedTracingMiddleware)
     
     # Add CORS middleware
     app.add_middleware(
@@ -91,7 +121,7 @@ def setup_middleware(app, config: Dict[str, Any]):
         allow_origins=config["cors_origins"],
         allow_credentials=True,
         allow_methods=["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
-        allow_headers=["Content-Type", "Authorization", "X-API-Key"],
+        allow_headers=["Content-Type", "Authorization", "X-API-Key", "X-Trace-ID"],
     )
     
     # Add security middleware

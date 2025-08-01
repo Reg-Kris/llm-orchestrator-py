@@ -8,7 +8,7 @@ import logging
 from typing import Dict, Any
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Request
 from pydantic import BaseModel
 
 # Configure logging
@@ -69,20 +69,35 @@ setup_middleware(app, app_config)
 
 # Main API Endpoints
 @app.post("/chat", response_model=ChatResponse)
-async def chat(request: ChatRequest):
+async def chat(request: ChatRequest, http_request: Request):
     """Main chat endpoint with native Gemini function calling and budget enforcement"""
-    return await chat_handler.handle_chat_request(request)
+    # Get trace ID from request state
+    trace_id = getattr(http_request.state, 'trace_id', None)
+    if trace_id:
+        logger.info(f"[TRACE:{trace_id}] Processing chat request for session: {request.session_id}")
+    
+    return await chat_handler.handle_chat_request(request, trace_id=trace_id)
 
 @app.get("/tools")
-async def list_tools():
+async def list_tools(request: Request):
     """List available MCP tools"""
-    tools = await mcp_client.get_tools()
+    # Get trace ID from request state
+    trace_id = getattr(request.state, 'trace_id', None)
+    if trace_id:
+        logger.info(f"[TRACE:{trace_id}] Listing available tools")
+    
+    tools = await mcp_client.get_tools(trace_id=trace_id)
     return {"tools": tools}
 
 @app.post("/execute-tool")
-async def execute_tool(request: ToolExecutionRequest):
+async def execute_tool(request: ToolExecutionRequest, http_request: Request):
     """Execute a specific MCP tool directly"""
-    result = await mcp_client.call_tool(request.tool_name, request.arguments)
+    # Get trace ID from request state
+    trace_id = getattr(http_request.state, 'trace_id', None)
+    if trace_id:
+        logger.info(f"[TRACE:{trace_id}] Executing tool: {request.tool_name}")
+    
+    result = await mcp_client.call_tool(request.tool_name, request.arguments, trace_id=trace_id)
     return {"result": result, "tool": request.tool_name}
 
 @app.get("/sessions/{session_id}/history")
