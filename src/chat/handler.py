@@ -77,12 +77,9 @@ class ChatHandler:
             await self._check_budget_before_request(request, session)
         
         try:
-            # Configure generation with thinking budget
+            # Configure generation
             thinking_budget = request.thinking_budget or self.thinking_budget
             generation_config = genai.types.GenerationConfig(
-                thinking_config=genai.types.ThinkingConfig(
-                    thinking_budget=thinking_budget
-                ),
                 max_output_tokens=self.max_tokens,
                 temperature=self.temperature
             )

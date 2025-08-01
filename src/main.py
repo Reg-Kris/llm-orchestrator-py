@@ -16,10 +16,10 @@ logging.basicConfig(level=getattr(logging, os.getenv("LOG_LEVEL", "INFO")))
 logger = logging.getLogger(__name__)
 
 # Import modular components
-from chat import ChatRequest, ChatResponse
-from config import load_configuration, setup_middleware, cleanup_configuration
-from app_factory import initialize_components, cleanup_components
-from endpoints import (
+from .chat import ChatRequest, ChatResponse
+from .config import load_configuration, setup_middleware, cleanup_configuration
+from .app_factory import initialize_components, cleanup_components
+from .endpoints import (
     function_calling_status_handler, 
     cost_tracking_status_handler,
     health_check_handler,
@@ -148,7 +148,7 @@ async def get_services_health():
 
 # Include budget management API
 try:
-    from budget_api import budget_router
+    from .budget_api import budget_router
     app.include_router(budget_router)
     logger.info("✅ Budget management API endpoints enabled")
 except ImportError as e:

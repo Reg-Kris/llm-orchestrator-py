@@ -929,12 +929,9 @@ async def chat(request: ChatRequest):
         # Import the function calling module
         from gemini_function_calling import GeminiFunctionCallHandler, create_gemini_model_with_tools
         
-        # Configure generation with thinking budget
+        # Configure generation
         thinking_budget = request.thinking_budget or THINKING_BUDGET
         generation_config = genai.types.GenerationConfig(
-            thinking_config=genai.types.ThinkingConfig(
-                thinking_budget=thinking_budget
-            ),
             max_output_tokens=MAX_TOKENS,
             temperature=TEMPERATURE
         )
@@ -1112,12 +1109,9 @@ async def chat_legacy_keyword_matching(request: ChatRequest, session: Dict[str, 
         # Get available tools
         available_tools = await mcp_client.get_tools()
         
-        # Configure generation with thinking budget
+        # Configure generation
         thinking_budget = request.thinking_budget or THINKING_BUDGET
         generation_config = genai.types.GenerationConfig(
-            thinking_config=genai.types.ThinkingConfig(
-                thinking_budget=thinking_budget
-            ),
             max_output_tokens=MAX_TOKENS,
             temperature=TEMPERATURE
         )

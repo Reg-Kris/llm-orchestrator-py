@@ -24,5 +24,8 @@ USER appuser
 # Expose port
 EXPOSE 8003
 
+# Set PYTHONPATH to include the current directory
+ENV PYTHONPATH=/app
+
 # Run the application
 CMD ["uvicorn", "src.main:app", "--host", "0.0.0.0", "--port", "8003"]

@@ -6,11 +6,11 @@ Handles component initialization and lifecycle management
 import logging
 from typing import Dict, Any, Tuple
 
-from chat import ChatHandler
-from session.manager import HybridSessionManager
-from mcp.http_client import MCPHttpClient
-from mcp.stdio_client import MCPStdioClient
-from cost.tracking import CostTrackingManager
+from .chat import ChatHandler
+from .session.manager import HybridSessionManager
+from .mcp.http_client import MCPHttpClient
+from .mcp.stdio_client import MCPStdioClient
+from .cost.tracking import CostTrackingManager
 
 logger = logging.getLogger(__name__)
 

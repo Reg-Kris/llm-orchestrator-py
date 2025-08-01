@@ -7,7 +7,7 @@ This module handles chat functionality including:
 - Legacy keyword-based tool detection
 """
 
-from .handler import ChatHandler
+from .handler import ChatHandler, ChatRequest, ChatResponse
 from .function_calling import FunctionCallManager
 
-__all__ = ["ChatHandler", "FunctionCallManager"]
+__all__ = ["ChatHandler", "ChatRequest", "ChatResponse", "FunctionCallManager"]

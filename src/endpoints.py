@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 async def function_calling_status_handler(mcp_client):
     """Get status of function calling implementation"""
     try:
-        from gemini_function_calling import GeminiFunctionCallHandler
+        from .gemini_function_calling import GeminiFunctionCallHandler
         
         # Test function calling setup
         handler = GeminiFunctionCallHandler(mcp_client)

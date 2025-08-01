@@ -23,7 +23,7 @@ try:
     from pyairtable_common.config import initialize_secrets, get_secret, close_secrets
     from pyairtable_common.middleware import setup_security_middleware
     SECURE_CONFIG_AVAILABLE = True
-except ImportError as e:
+except (ImportError, Exception) as e:
     logger.warning(f"⚠️ Secure configuration not available: {e}")
     SECURE_CONFIG_AVAILABLE = False
 
@@ -31,7 +31,7 @@ except ImportError as e:
 try:
     from pyairtable_common.middleware import add_circuit_breaker_middleware, SERVICE_CONFIGS
     CIRCUIT_BREAKER_AVAILABLE = True
-except ImportError as e:
+except (ImportError, Exception) as e:
     logger.warning(f"⚠️ Circuit breaker middleware not available: {e}")
     CIRCUIT_BREAKER_AVAILABLE = False
 
